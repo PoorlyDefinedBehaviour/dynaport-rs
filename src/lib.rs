@@ -106,6 +106,17 @@ pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, 
   })
 }
 
+/// Returns the lowest dynamic port that is not being used.
+pub fn lowest_dynamic_port() -> Option<usize> {
+  for port in LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT {
+    if is_available(port) {
+      return Some(port);
+    }
+  }
+
+  None
+}
+
 /// Returns the highest dynamic port that is not being used.
 pub fn highest_dynamic_port() -> Option<usize> {
   for port in (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).rev() {
@@ -178,6 +189,17 @@ mod tests {
   #[test]
   fn test_highest_n_registered_ports() {
     assert_eq!(Ok(vec![49151, 49150, 49149]), highest_n_registered_ports(3));
+  }
+
+  #[test]
+  fn test_lowest_dynamic_port() {
+    let mut listeners = vec![];
+
+    for expected_port in [49152, 49153, 49154] {
+      assert_eq!(Some(expected_port), lowest_dynamic_port());
+
+      listeners.push(TcpListener::bind(format!("127.0.1:{}", expected_port)).unwrap());
+    }
   }
 
   #[test]
