@@ -1,15 +1,13 @@
-// The Well Known Ports (0-1023) – which are reserved for the operating system and core services.
-// The Registered Ports (1024-49151) – which can be used by applications, specific services, and users.
-// The Dynamic and/or Private Ports (49152-65535)
-
 use std::net::TcpListener;
 
 use rand::seq::SliceRandom;
 use thiserror::Error;
 
+/// The Registered Ports (1024-49151) – which can be used by applications, specific services, and users.
 const LOWEST_REGISTERED_PORT: usize = 1024;
 const HIGHEST_REGISTERED_PORT: usize = 49151;
 
+/// The Dynamic and/or Private Ports (49152-65535)
 const LOWEST_DYNAMIC_PORT: usize = 49152;
 const HIGHEST_DYNAMIC_PORT: usize = 65535;
 
