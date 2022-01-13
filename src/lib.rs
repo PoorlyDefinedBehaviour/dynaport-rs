@@ -1,16 +1,19 @@
 /// Contains functions to get ports that are not being used.
+///
+/// Supports registered and dynamic ports.
 use std::net::TcpListener;
 
+use lazy_static::lazy_static;
 use rand::seq::SliceRandom;
 use thiserror::Error;
 
+lazy_static! {
 /// The Registered Ports (1024-49151) – which can be used by applications, specific services, and users.
-const LOWEST_REGISTERED_PORT: usize = 1024;
-const HIGHEST_REGISTERED_PORT: usize = 49151;
+static ref REGISTERED_PORTS_RANGE: Vec<usize> = (1024..=49151).collect();
 
 /// The Dynamic and/or Private Ports (49152-65535)
-const LOWEST_DYNAMIC_PORT: usize = 49152;
-const HIGHEST_DYNAMIC_PORT: usize = 65535;
+static ref DYNAMIC_PORTS_RANGE: Vec<usize> = (49152..=65535).collect();
+}
 
 #[derive(Debug, PartialEq, Error)]
 pub enum DynaportError {
@@ -26,7 +29,7 @@ fn is_available(port: usize) -> bool {
 ///
 /// The port is chosen at random.
 pub fn random_registered_port() -> Option<usize> {
-  let mut ports: Vec<usize> = (LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT).collect();
+  let mut ports = REGISTERED_PORTS_RANGE.clone();
 
   ports.shuffle(&mut rand::thread_rng());
 
@@ -41,9 +44,9 @@ pub fn random_registered_port() -> Option<usize> {
 
 /// Returns the lowest registered port that is not being used.
 pub fn lowest_registered_port() -> Option<usize> {
-  for port in LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT {
-    if is_available(port) {
-      return Some(port);
+  for port in REGISTERED_PORTS_RANGE.iter() {
+    if is_available(*port) {
+      return Some(*port);
     }
   }
 
@@ -56,13 +59,13 @@ pub fn lowest_registered_port() -> Option<usize> {
 pub fn lowest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
-  for port in LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT {
+  for port in REGISTERED_PORTS_RANGE.iter() {
     if ports.len() == number_of_ports {
       return Ok(ports);
     }
 
-    if let Ok(_) = TcpListener::bind(format!("127.0.0.1:{}", port)) {
-      ports.push(port);
+    if TcpListener::bind(format!("127.0.0.1:{}", port)).is_ok() {
+      ports.push(*port);
     }
   }
 
@@ -74,9 +77,9 @@ pub fn lowest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, D
 
 /// Returns the highest registered port that is not being used.
 pub fn highest_registered_port() -> Option<usize> {
-  for port in (LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT).rev() {
-    if is_available(port) {
-      return Some(port);
+  for port in REGISTERED_PORTS_RANGE.iter().rev() {
+    if is_available(*port) {
+      return Some(*port);
     }
   }
 
@@ -89,13 +92,13 @@ pub fn highest_registered_port() -> Option<usize> {
 pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
-  for port in (LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT).rev() {
+  for port in REGISTERED_PORTS_RANGE.iter().rev() {
     if ports.len() == number_of_ports {
       return Ok(ports);
     }
 
-    if let Ok(_) = TcpListener::bind(format!("127.0.0.1:{}", port)) {
-      ports.push(port);
+    if TcpListener::bind(format!("127.0.0.1:{}", port)).is_ok() {
+      ports.push(*port);
     }
   }
 
@@ -109,7 +112,7 @@ pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, 
 ///
 /// The port is chosen at random.
 pub fn random_dynamic_port() -> Option<usize> {
-  let mut ports: Vec<usize> = (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).collect();
+  let mut ports = DYNAMIC_PORTS_RANGE.clone();
 
   ports.shuffle(&mut rand::thread_rng());
 
@@ -124,9 +127,9 @@ pub fn random_dynamic_port() -> Option<usize> {
 
 /// Returns the lowest dynamic port that is not being used.
 pub fn lowest_dynamic_port() -> Option<usize> {
-  for port in LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT {
-    if is_available(port) {
-      return Some(port);
+  for port in DYNAMIC_PORTS_RANGE.iter() {
+    if is_available(*port) {
+      return Some(*port);
     }
   }
 
@@ -139,13 +142,13 @@ pub fn lowest_dynamic_port() -> Option<usize> {
 pub fn lowest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
-  for port in LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT {
+  for port in DYNAMIC_PORTS_RANGE.iter() {
     if ports.len() == number_of_ports {
       return Ok(ports);
     }
 
-    if let Ok(_) = TcpListener::bind(format!("127.0.0.1:{}", port)) {
-      ports.push(port);
+    if TcpListener::bind(format!("127.0.0.1:{}", port)).is_ok() {
+      ports.push(*port);
     }
   }
 
@@ -157,9 +160,9 @@ pub fn lowest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, Dyna
 
 /// Returns the highest dynamic port that is not being used.
 pub fn highest_dynamic_port() -> Option<usize> {
-  for port in (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).rev() {
-    if is_available(port) {
-      return Some(port);
+  for port in DYNAMIC_PORTS_RANGE.iter().rev() {
+    if is_available(*port) {
+      return Some(*port);
     }
   }
 
@@ -172,13 +175,13 @@ pub fn highest_dynamic_port() -> Option<usize> {
 pub fn highest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
-  for port in (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).rev() {
+  for port in DYNAMIC_PORTS_RANGE.iter().rev() {
     if ports.len() == number_of_ports {
       return Ok(ports);
     }
 
-    if let Ok(_) = TcpListener::bind(format!("127.0.0.1:{}", port)) {
-      ports.push(port);
+    if TcpListener::bind(format!("127.0.0.1:{}", port)).is_ok() {
+      ports.push(*port);
     }
   }
 
@@ -194,8 +197,7 @@ mod tests {
 
   #[test]
   fn test_random_registered_port() {
-    assert!((LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT)
-      .contains(&random_registered_port().unwrap()));
+    assert!(REGISTERED_PORTS_RANGE.contains(&random_registered_port().unwrap()));
   }
 
   #[test]
@@ -232,7 +234,7 @@ mod tests {
 
   #[test]
   fn test_random_dynamic_port() {
-    assert!((LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).contains(&random_dynamic_port().unwrap()));
+    assert!(DYNAMIC_PORTS_RANGE.contains(&random_dynamic_port().unwrap()));
   }
 
   #[test]
