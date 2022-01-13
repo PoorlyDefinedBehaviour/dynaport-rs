@@ -117,6 +117,28 @@ pub fn highest_dynamic_port() -> Option<usize> {
   None
 }
 
+/// Returns the n highest dynamic ports that aren't being used.
+///
+/// Returns error if there aren't enough ports available.
+pub fn highest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
+  let mut ports = Vec::with_capacity(number_of_ports);
+
+  for port in (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).rev() {
+    if ports.len() == number_of_ports {
+      return Ok(ports);
+    }
+
+    if let Ok(_) = TcpListener::bind(format!("127.0.0.1:{}", port)) {
+      ports.push(port);
+    }
+  }
+
+  Err(DynaportError::NotEnoughPorts {
+    wanted: number_of_ports,
+    got: ports.len(),
+  })
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -167,5 +189,10 @@ mod tests {
 
       listeners.push(TcpListener::bind(format!("127.0.1:{}", expected_port)).unwrap());
     }
+  }
+
+  #[test]
+  fn test_highest_n_dynamic_ports() {
+    assert_eq!(Ok(vec![65535, 65534, 65533]), highest_n_dynamic_ports(3));
   }
 }
