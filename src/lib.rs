@@ -10,6 +10,9 @@ use thiserror::Error;
 const LOWEST_REGISTERED_PORT: usize = 1024;
 const HIGHEST_REGISTERED_PORT: usize = 49151;
 
+const LOWEST_DYNAMIC_PORT: usize = 49152;
+const HIGHEST_DYNAMIC_PORT: usize = 65535;
+
 #[derive(Debug, PartialEq, Error)]
 pub enum DynaportError {
   #[error("wanted {wanted:?} ports but there are only {got:?} available")]
@@ -103,6 +106,17 @@ pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, 
   })
 }
 
+/// Returns the highest dynamic port that is not being used.
+pub fn highest_dynamic_port() -> Option<usize> {
+  for port in (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).rev() {
+    if is_available(port) {
+      return Some(port);
+    }
+  }
+
+  None
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -142,5 +156,16 @@ mod tests {
   #[test]
   fn test_highest_n_registered_ports() {
     assert_eq!(Ok(vec![49151, 49150, 49149]), highest_n_registered_ports(3));
+  }
+
+  #[test]
+  fn test_highest_dynamic_port() {
+    let mut listeners = vec![];
+
+    for expected_port in [65535, 65534, 65533] {
+      assert_eq!(Some(expected_port), highest_dynamic_port());
+
+      listeners.push(TcpListener::bind(format!("127.0.1:{}", expected_port)).unwrap());
+    }
   }
 }
