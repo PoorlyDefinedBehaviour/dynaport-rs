@@ -28,6 +28,15 @@ fn is_available(port: usize) -> bool {
 /// Returns a registered port that is not being used.
 ///
 /// The port is chosen at random.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::random_registered_port() {
+///   None => println!("no ports available"),
+///   Some(port) => println!("{} is available", port),
+/// }
+/// ```
 pub fn random_registered_port() -> Option<usize> {
   let mut ports = REGISTERED_PORTS_RANGE.clone();
 
@@ -43,6 +52,15 @@ pub fn random_registered_port() -> Option<usize> {
 }
 
 /// Returns the lowest registered port that is not being used.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::lowest_registered_port() {
+///   None => println!("no ports available"),
+///   Some(port) => println!("{} is available", port),
+/// }
+/// ```
 pub fn lowest_registered_port() -> Option<usize> {
   for port in REGISTERED_PORTS_RANGE.iter() {
     if is_available(*port) {
@@ -56,6 +74,15 @@ pub fn lowest_registered_port() -> Option<usize> {
 /// Returns the n lowest registered ports that aren't being used.
 ///
 /// Returns error if there aren't enough ports available.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::lowest_n_registered_ports(5) {
+///   Err(e) => println!("not enough ports available: {:?}", e),
+///   Ok(ports) => println!("{:?} are available", ports),
+/// }
+/// ```
 pub fn lowest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
@@ -76,6 +103,15 @@ pub fn lowest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, D
 }
 
 /// Returns the highest registered port that is not being used.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::highest_registered_port() {
+///   None => println!("no ports available"),
+///   Some(port) => println!("{} is available", port),
+/// }
+/// ```
 pub fn highest_registered_port() -> Option<usize> {
   for port in REGISTERED_PORTS_RANGE.iter().rev() {
     if is_available(*port) {
@@ -89,6 +125,15 @@ pub fn highest_registered_port() -> Option<usize> {
 /// Returns the n highest registered ports that aren't being used.
 ///
 /// Returns error if there aren't enough ports available.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::highest_n_registered_ports(10) {
+///   Err(e) => println!("not enough ports available: {:?}", e),
+///   Ok(ports) => println!("{:?} are available", ports),
+/// }
+/// ```
 pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
@@ -111,6 +156,15 @@ pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, 
 /// Returns a dynamic port that is not being used.
 ///
 /// The port is chosen at random.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::random_dynamic_port() {
+///   None => println!("no ports available"),
+///   Some(port) => println!("{} is available", port),
+/// }
+/// ```
 pub fn random_dynamic_port() -> Option<usize> {
   let mut ports = DYNAMIC_PORTS_RANGE.clone();
 
@@ -126,6 +180,15 @@ pub fn random_dynamic_port() -> Option<usize> {
 }
 
 /// Returns the lowest dynamic port that is not being used.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::lowest_dynamic_port() {
+///   None => println!("no ports available"),
+///   Some(port) => println!("{} is available", port),
+/// }
+/// ```
 pub fn lowest_dynamic_port() -> Option<usize> {
   for port in DYNAMIC_PORTS_RANGE.iter() {
     if is_available(*port) {
@@ -139,6 +202,15 @@ pub fn lowest_dynamic_port() -> Option<usize> {
 /// Returns the n lowest dynamic ports that aren't being used.
 ///
 /// Returns error if there aren't enough ports available.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::lowest_n_dynamic_ports(3) {
+///   Err(e) => println!("not enough ports available: {:?}", e),
+///   Ok(ports) => println!("{:?} are available", ports),
+/// }
+/// ```
 pub fn lowest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
@@ -159,6 +231,15 @@ pub fn lowest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, Dyna
 }
 
 /// Returns the highest dynamic port that is not being used.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::highest_dynamic_port() {
+///   None => println!("no ports available"),
+///   Some(port) => println!("{} is available", port),
+/// }
+/// ```
 pub fn highest_dynamic_port() -> Option<usize> {
   for port in DYNAMIC_PORTS_RANGE.iter().rev() {
     if is_available(*port) {
@@ -172,6 +253,15 @@ pub fn highest_dynamic_port() -> Option<usize> {
 /// Returns the n highest dynamic ports that aren't being used.
 ///
 /// Returns error if there aren't enough ports available.
+///
+/// # Examples
+///
+/// ```rust
+/// match dynaport::highest_n_dynamic_ports(2) {
+///   Err(e) => println!("not enough ports available: {:?}", e),
+///   Ok(ports) => println!("{:?} are available", ports),
+/// }
+/// ```
 pub fn highest_n_dynamic_ports(number_of_ports: usize) -> Result<Vec<usize>, DynaportError> {
   let mut ports = Vec::with_capacity(number_of_ports);
 
