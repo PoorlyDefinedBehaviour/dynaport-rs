@@ -1,3 +1,4 @@
+/// Contains functions to get ports that are not being used.
 use std::net::TcpListener;
 
 use rand::seq::SliceRandom;
@@ -104,6 +105,23 @@ pub fn highest_n_registered_ports(number_of_ports: usize) -> Result<Vec<usize>, 
   })
 }
 
+/// Returns a dynamic port that is not being used.
+///
+/// The port is chosen at random.
+pub fn random_dynamic_port() -> Option<usize> {
+  let mut ports: Vec<usize> = (LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).collect();
+
+  ports.shuffle(&mut rand::thread_rng());
+
+  for port in ports {
+    if is_available(port) {
+      return Some(port);
+    }
+  }
+
+  None
+}
+
 /// Returns the lowest dynamic port that is not being used.
 pub fn lowest_dynamic_port() -> Option<usize> {
   for port in LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT {
@@ -176,7 +194,8 @@ mod tests {
 
   #[test]
   fn test_random_registered_port() {
-    assert!(matches!(random_registered_port(), Some(_)));
+    assert!((LOWEST_REGISTERED_PORT..=HIGHEST_REGISTERED_PORT)
+      .contains(&random_registered_port().unwrap()));
   }
 
   #[test]
@@ -209,6 +228,11 @@ mod tests {
   #[test]
   fn test_highest_n_registered_ports() {
     assert_eq!(Ok(vec![49151, 49150, 49149]), highest_n_registered_ports(3));
+  }
+
+  #[test]
+  fn test_random_dynamic_port() {
+    assert!((LOWEST_DYNAMIC_PORT..=HIGHEST_DYNAMIC_PORT).contains(&random_dynamic_port().unwrap()));
   }
 
   #[test]
