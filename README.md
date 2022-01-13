@@ -11,7 +11,7 @@ dynaport = { git = "https://github.com/poorlydefinedbehaviour/dynaport-rs", tag 
 
 # Docs
 
-Run `cargo doc --no-deps --open` after adding dynaport to `Cargo.toml`
+Run `cargo doc --open` after adding dynaport to `Cargo.toml`
 
 # Example
 
